@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cpm shop</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold; /* Dodato */
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .advertisement {
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+            position: relative;
+        }
+        .advertisement img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        .advertisement h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .advertisement p {
+            color: #555;
+        }
+        .advertisement .info {
+            margin-top: 10px;
+        }
+        .remove-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ff3333;
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Oglasi za Parking</h1>
+        <button id="showFormButton">Napravi Oglas</button>
+        <form id="parkingForm" enctype="multipart/form-data" class="hide">
+            <label for="carName">Ime Automobila:</label>
+            <input type="text" id="carName" name="carName" required>
+            
+            <label for="instagram">Instagram:</label>
+            <input type="text" id="instagram" name="instagram" required>
+
+            <label for="carPrice">Cijena Automobila (u KM):</label>
+            <input type="number" id="carPrice" name="carPrice" required>
+
+            <label for="carMileage">Kilometraža Automobila:</label> <!-- Dodato -->
+            <input type="number" id="carMileage" name="carMileage" required> <!-- Dodato -->
+
+            <label for="carImage">Slika Automobila:</label>
+            <input type="file" id="carImage" name="carImage" accept="image/*" required>
+
+            <input type="submit" value="Dodaj Oglas">
+        </form>
+    </div>
+
+    <div id="advertisementList" class="container">
+        <h1>Oglasi za shop</h1>
+        <!-- Oglas se dodaje dinamički putem JavaScript-a -->
+    </div>
+
+    <script>
+        // Provera podrške lokalnog skladišta pregledača
+        function storageAvailable(type) {
+            try {
+                var storage = window[type],
+                    x = '__storage_test__';
+                storage.setItem(x, x);
+                storage.removeItem(x);
+                return true;
+            }
+            catch (e) {
+                return false;
+            }
+        }
+
+        // Učitavanje sačuvanih oglasa
+        function loadAdvertisements() {
+            if (storageAvailable('localStorage')) {
+                var advertisements = JSON.parse(localStorage.getItem('advertisements')) || [];
+                advertisements.forEach(function(advertisement) {
+                    renderAdvertisement(advertisement);
+                });
+            }
+        }
+
+        // Čuvanje oglasa u lokalnom skladištu
+        function saveAdvertisement(advertisement) {
+            if (storageAvailable('localStorage')) {
+                var advertisements = JSON.parse(localStorage.getItem('advertisements')) || [];
+                advertisements.push(advertisement);
+                localStorage.setItem('advertisements', JSON.stringify(advertisements));
+            }
+        }
+
+        // Brisanje oglasa iz lokalnog skladišta
+        function removeAdvertisement(index) {
+            if (storageAvailable('localStorage')) {
+                var advertisements = JSON.parse(localStorage.getItem('advertisements')) || [];
+                advertisements.splice(index, 1);
+                localStorage.setItem('advertisements', JSON.stringify(advertisements));
+            }
+        }
+
+        // Rendering oglasa
+        function renderAdvertisement(advertisement, index) {
+            var advertisementList = document.getElementById('advertisementList');
+
+            var advertisementDiv = document.createElement('div');
+            advertisementDiv.classList.add('advertisement');
+
+            var image = document.createElement('img');
+            image.src = advertisement.image;
+
+            var h2 = document.createElement('h2');
+            h2.textContent = advertisement.carName;
+
+            var p1 = document.createElement('p');
+            p1.innerHTML = '<span>Instagram:</span> ' + advertisement.instagram;
+
+            var p2 = document.createElement('p');
+            p2.innerHTML = '<span>Cijena:</span> ' + advertisement.carPrice + ' KM';
+
+            var p3 = document.createElement('p');
+            p3.innerHTML = '<span>Kilometraža:</span> ' + advertisement.carMileage; // Dodato
+
+            var removeButton = document.createElement('button');
+            removeButton.textContent = 'Ukloni Oglas';
+            removeButton.classList.add('remove-button');
+            removeButton.addEventListener('click', function() {
+                advertisementList.removeChild(advertisementDiv);
+                removeAdvertisement(index);
+            });
+
+            advertisementDiv.appendChild(image);
+            advertisementDiv.appendChild(h2);
+            advertisementDiv.appendChild(p1);
+            advertisementDiv.appendChild(p2);
+            advertisementDiv.appendChild(p3); // Dodato
+            advertisementDiv.appendChild(removeButton);
+
+            advertisementList.appendChild(advertisementDiv);
+        }
+
+        // Inicijalizacija
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAdvertisements();
+
+            document.getElementById('showFormButton').addEventListener('click', function() {
+                var form = document.getElementById('parkingForm');
+                var button = document.getElementById('showFormButton');
+                if (form.classList.contains('hide')) {
+                    form.classList.remove('hide');
+                    button.textContent = 'Sakrij Formu';
+                } else {
+                    form.classList.add('hide');
+                    button.textContent = 'Napravi Oglas';
+                }
+            });
+
+            document.getElementById('parkingForm').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                var carName = document.getElementById('carName').value;
+                var instagram = document.getElementById('instagram').value;
+                var carPrice = document.getElementById('carPrice').value;
+                var carMileage = document.getElementById('carMileage').value; // Dodato
+                var carImage = document.getElementById('carImage').files[0];
+
+                var reader = new FileReader();
+                reader.onload = function() {
+                    var advertisement = {
+                        carName: carName,
+                        instagram: instagram,
+                        carPrice: carPrice,
+                        carMileage: carMileage, // Dodato
+                        image: reader.result
+                    };
+
+                    saveAdvertisement(advertisement);
+                    renderAdvertisement(advertisement, localStorage.length);
+
+                    document.getElementById('parkingForm').reset();
+
+                    // Sakri formu nakon dodavanja oglasa
+                    document.getElementById('parkingForm').classList.add('hide');
+                    document.getElementById('showFormButton').textContent = 'Napravi Oglas';
+                };
+                reader.readAsDataURL(carImage);
+            });
+        });
+    </script>
+</body>
+</html>
