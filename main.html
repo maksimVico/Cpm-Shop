@@ -98,7 +98,7 @@
             cursor: pointer;
             font-size: 14px;
         }
-        .create-ad-button, .settings-button {
+        .create-ad-button, .settings-button, .delete-all-button {
             background-color: #007bff;
             color: #fff;
             border: none;
@@ -108,7 +108,7 @@
             font-size: 14px;
             margin-bottom: 10px;
         }
-        .settings-button {
+        .delete-all-button {
             background-color: #ff3333;
         }
         .modal {
@@ -168,7 +168,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('parkingForm');
             const createAdButton = document.getElementById('createAdButton');
-            const settingsButton = document.getElementById('settingsButton');
+            const deleteAllButton = document.getElementById('deleteAllButton');
             const advertisementContainer = document.querySelector('.advertisement-container');
             const modal = document.getElementById('myModal');
             const closeBtn = document.getElementsByClassName('close')[0];
@@ -257,7 +257,7 @@
                 advertisementContainer.appendChild(advertisementDiv);
             }
 
-            settingsButton.addEventListener('click', function() {
+            deleteAllButton.addEventListener('click', function() {
                 modal.style.display = 'block';
             });
 
@@ -294,7 +294,7 @@
     <div class="container">
         <h1>Cpm Prodavnica</h1>
         <button id="createAdButton" class="create-ad-button">Napravi Oglas</button>
-        <button id="settingsButton" class="settings-button">Podešavanja</button>
+        <button id="deleteAllButton" class="delete-all-button">Obriši Sve Oglase</button>
         <form id="parkingForm">
             <label for="carName">Naziv Vozila:</label>
             <input type="text" id="carName" name="carName" required>
